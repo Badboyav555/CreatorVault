@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment - CreatorVault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <main>
+    <div class="container" style="max-width: 600px; margin: 40px auto;">
+      <div class="glass-card">
+        <h2 class="text-center">Complete Your Payment</h2>
+        <p class="text-center" style="color: #666;">Follow the instructions below to activate your membership</p>
+        
+        <!-- Payment Instructions -->
+        <div style="background: linear-gradient(135deg, #FFE4EC, #FFF0F5); border-radius: 24px; padding: 24px; margin: 24px 0;">
+          <div class="text-center">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=UPI%3Acreatorvault%40okhdfcbank" style="width: 160px; background: white; padding: 16px; border-radius: 20px;">
+            <h4 style="margin: 16px 0;">Scan QR Code to Pay</h4>
+            <p><strong>UPI ID:</strong> creatorvault@okhdfcbank</p>
+            <p><strong>Account Holder:</strong> CreatorVault Media</p>
+          </div>
+          
+          <div style="margin-top: 24px;">
+            <h4>📝 Instructions:</h4>
+            <ol style="margin: 16px 0 0 20px;">
+              <li>Scan the QR code using any UPI app (Google Pay, PhonePe, Paytm)</li>
+              <li>Enter the amount based on your selected plan</li>
+              <li>Complete the payment</li>
+              <li>Take a screenshot of the successful payment</li>
+              <li>Fill the form below with transaction details</li>
+              <li>Upload the screenshot and submit</li>
+              <li>Wait for admin approval (within 24 hours)</li>
+            </ol>
+          </div>
+        </div>
+        
+        <!-- Payment Form -->
+        <form id="paymentForm">
+          <h4>Payment Details</h4>
+          
+          <div style="margin-bottom: 16px;">
+            <label>Full Name</label>
+            <input type="text" id="fullName" required readonly style="background: #f5f5f5;">
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <label>Email Address</label>
+            <input type="email" id="email" required readonly style="background: #f5f5f5;">
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <label>Selected Plan</label>
+            <input type="text" id="plan" required readonly style="background: #f5f5f5;">
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <label>Amount (₹)</label>
+            <input type="text" id="amount" readonly style="background: #f5f5f5;">
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <label>Transaction ID / UTR Number</label>
+            <input type="text" id="transactionId" required placeholder="Enter transaction ID from your UPI app">
+          </div>
+          
+          <div style="margin-bottom: 24px;">
+            <label>Payment Screenshot</label>
+            <input type="file" id="screenshot" accept="image/*" required>
+            <small style="color: #666;">Upload clear screenshot showing transaction ID</small>
+          </div>
+          
+          <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Submit Payment Request</button>
+        </form>
+      </div>
+    </div>
+  </main>
+  
+  <div id="footer-container"></div>
+  
+  <script>
+    let currentUser = null;
+    
+    async function loadUserAndPlan() {
+      currentUser = await getCurrentUser();
+      if (!currentUser) {
+        showToast('Please login first', 'error');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 1500);
+        return;
+      }
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      let selectedPlan = urlParams.get('plan') || localStorage.getItem('selectedPlan') || 'premium';
+      
+      const planPrices = {
+        basic: '₹599',
+        premium: '₹1499',
+        vip: '₹3499'
+      };
+      
+      document.getElementById('fullName').value = currentUser.full_name || '';
+      document.getElementById('email').value = currentUser.email || '';
+      document.getElementById('plan').value = selectedPlan.toUpperCase();
+      document.getElementById('amount').value = planPrices[selectedPlan] || '₹1499';
+    }
+    
+    document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const transactionId = document.getElementById('transactionId').value;
+      const screenshot = document.getElementById('screenshot').files[0];
+      
+      if (!transactionId) {
+        showToast('Please enter transaction ID', 'error');
+        return;
+      }
+      
+      if (!screenshot) {
+        showToast('Please upload payment screenshot', 'error');
+        return;
+      }
+      
+      // In production, upload to Supabase Storage
+      const paymentData = {
+        user_id: currentUser.id,
+        plan: document.getElementById('plan').value.toLowerCase(),
+        transaction_id: transactionId,
+        screenshot_url: 'pending_upload.jpg', // Mock URL
+        status: 'pending'
+      };
+      
+      const { error } = await supabaseClient.from('payment_requests').insert(paymentData);
+      
+      if (error) {
+        showToast('Error submitting payment. Please try again.', 'error');
+      } else {
+        showToast('Payment request submitted! Admin will verify within 24 hours.', 'success');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 2000);
+      }
+    });
+    
+    loadUserAndPlan();
+  </script>
+</body>
+</html>
