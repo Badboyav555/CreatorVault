@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery - CreatorVault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <main>
+    <div class="container">
+      <h1 style="margin: 32px 0;">Photo Gallery</h1>
+      
+      <!-- Filters -->
+      <div class="flex-between" style="margin-bottom: 32px;">
+        <div>
+          <button class="btn-outline filterBtn active" data-filter="all">All</button>
+          <button class="btn-outline filterBtn" data-filter="photography">Photography</button>
+          <button class="btn-outline filterBtn" data-filter="urban">Urban</button>
+          <button class="btn-outline filterBtn" data-filter="tutorial">Tutorial</button>
+        </div>
+        <div>
+          <input type="text" id="searchInput" placeholder="Search gallery..." style="width: 250px;">
+        </div>
+      </div>
+      
+      <!-- Gallery Grid -->
+      <div class="grid-pinterest" id="galleryGrid">
+        <!-- Will be populated by JavaScript -->
+      </div>
+    </div>
+  </main>
+  
+  <div id="footer-container"></div>
+  
+  <script>
+    let allPhotos = [];
+    let isUserPremium = false;
+    
+    async function loadGallery() {
+      const user = await getCurrentUser();
+      isUserPremium = await isPremiumMember();
+      
+      // Get photos from mock data
+      allPhotos = JSON.parse(localStorage.getItem('mock_photos') || '[]');
+      renderGallery(allPhotos);
+    }
+    
+    function renderGallery(photos) {
+      const grid = document.getElementById('galleryGrid');
+      grid.innerHTML = photos.map(photo => `
+        <div class="card">
+          ${photo.premium && !isUserPremium ? `
+            <div class="blur-premium">
+              <img src="${photo.thumbnail_url}" style="width: 100%; height: 260px; object-fit: cover;" class="blur-overlay">
+              <div class="premium-lock">
+                <i class="fas fa-lock fa-2x"></i>
+                <span>Premium Content</span>
+                <a href="membership.html"><button class="btn-primary">Unlock Access</button></a>
+              </div>
+            </div>
+          ` : `
+            <img src="${photo.thumbnail_url}" style="width: 100%; height: 260px; object-fit: cover;">
+          `}
+          <div style="padding: 20px;">
+            <h3>${photo.title}</h3>
+            <p style="color: #666;">${photo.category}</p>
+            <div class="flex-between">
+              <span><i class="far fa-eye"></i> ${photo.views || 0} views</span>
+              ${photo.premium ? '<span class="premium-badge">Premium</span>' : '<span class="premium-badge" style="background: #22C55E;">Free</span>'}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function filterGallery() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const activeFilter = document.querySelector('.filterBtn.active').dataset.filter;
+      
+      let filtered = allPhotos;
+      
+      if (activeFilter !== 'all') {
+        filtered = filtered.filter(p => p.category.toLowerCase() === activeFilter);
+      }
+      
+      if (searchTerm) {
+        filtered = filtered.filter(p => p.title.toLowerCase().includes(searchTerm) || p.category.toLowerCase().includes(searchTerm));
+      }
+      
+      renderGallery(filtered);
+    }
+    
+    document.getElementById('searchInput').addEventListener('input', filterGallery);
+    document.querySelectorAll('.filterBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filterBtn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterGallery();
+      });
+    });
+    
+    loadGallery();
+  </script>
+</body>
+</html>
