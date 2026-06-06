@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Membership - CreatorVault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <main>
+    <div class="container">
+      <div class="text-center" style="margin: 48px 0;">
+        <h1 style="font-size: 48px;">Choose Your Plan</h1>
+        <p style="color: #666; margin-top: 16px;">Unlock exclusive content and support your favorite creators</p>
+      </div>
+      
+      <div class="grid-membership">
+        <!-- Basic Plan -->
+        <div class="card" style="padding: 32px; text-align: center;">
+          <h3 style="font-size: 24px;">Basic</h3>
+          <div style="margin: 24px 0;">
+            <span style="font-size: 48px; font-weight: 800;">$9</span>
+            <span style="color: #666;">/month</span>
+          </div>
+          <ul style="text-align: left; margin: 24px 0; list-style: none;">
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> Access to free library</li>
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> Community access</li>
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> Basic support</li>
+            <li style="margin: 12px 0; opacity: 0.5;"><i class="fas fa-times-circle"></i> Premium content</li>
+          </ul>
+          <a href="payment.html?plan=basic"><button class="btn-outline" style="width: 100%;">Get Basic</button></a>
+        </div>
+        
+        <!-- Premium Plan (Featured) -->
+        <div class="card" style="padding: 32px; text-align: center; border: 2px solid #EC4899; transform: scale(1.02);">
+          <span class="premium-badge" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%);">Most Popular</span>
+          <h3 style="font-size: 24px;">Premium</h3>
+          <div style="margin: 24px 0;">
+            <span style="font-size: 48px; font-weight: 800;">$19</span>
+            <span style="color: #666;">/month</span>
+          </div>
+          <ul style="text-align: left; margin: 24px 0; list-style: none;">
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> All content unlocked</li>
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> Early access to new content</li>
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> Premium support</li>
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> Download high-res assets</li>
+          </ul>
+          <a href="payment.html?plan=premium"><button class="btn-primary" style="width: 100%;">Get Premium</button></a>
+        </div>
+        
+        <!-- VIP Plan -->
+        <div class="card" style="padding: 32px; text-align: center;">
+          <h3 style="font-size: 24px;">VIP</h3>
+          <div style="margin: 24px 0;">
+            <span style="font-size: 48px; font-weight: 800;">$49</span>
+            <span style="color: #666;">/month</span>
+          </div>
+          <ul style="text-align: left; margin: 24px 0; list-style: none;">
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> Everything in Premium</li>
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> 1-on-1 mentorship calls</li>
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> Exclusive merchandise</li>
+            <li style="margin: 12px 0;"><i class="fas fa-check-circle" style="color: #22C55E;"></i> Private community access</li>
+          </ul>
+          <a href="payment.html?plan=vip"><button class="btn-outline" style="width: 100%;">Get VIP</button></a>
+        </div>
+      </div>
+      
+      <!-- Comparison Table -->
+      <div class="glass-card" style="margin: 64px 0;">
+        <h3 class="text-center" style="margin-bottom: 32px;">Compare Features</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr style="border-bottom: 1px solid #F9A8D4;">
+            <th style="padding: 16px; text-align: left;">Feature</th>
+            <th style="padding: 16px; text-align: center;">Basic</th>
+            <th style="padding: 16px; text-align: center;">Premium</th>
+            <th style="padding: 16px; text-align: center;">VIP</th>
+          </tr>
+          <tr style="border-bottom: 1px solid #F9A8D4;">
+            <td style="padding: 16px;">Content Access</td>
+            <td style="padding: 16px; text-align: center;">Free only</td>
+            <td style="padding: 16px; text-align: center;">✓ All</td>
+            <td style="padding: 16px; text-align: center;">✓ All</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #F9A8D4;">
+            <td style="padding: 16px;">Downloads</td>
+            <td style="padding: 16px; text-align: center;">✗</td>
+            <td style="padding: 16px; text-align: center;">✓ HD</td>
+            <td style="padding: 16px; text-align: center;">✓ 4K</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #F9A8D4;">
+            <td style="padding: 16px;">Support</td>
+            <td style="padding: 16px; text-align: center;">Basic</td>
+            <td style="padding: 16px; text-align: center;">Priority</td>
+            <td style="padding: 16px; text-align: center;">24/7 VIP</td>
+          </tr>
+        </table>
+      </div>
+      
+      <!-- FAQ -->
+      <div style="margin: 64px 0;">
+        <h2 class="text-center">Frequently Asked Questions</h2>
+        <div class="grid-pinterest" style="margin-top: 32px;">
+          <div>
+            <h4>Can I cancel anytime?</h4>
+            <p style="color: #666;">Yes, you can cancel your membership at any time.</p>
+          </div>
+          <div>
+            <h4>Is there a free trial?</h4>
+            <p style="color: #666;">We offer a 7-day money-back guarantee on all plans.</p>
+          </div>
+          <div>
+            <h4>How do I upgrade?</h4>
+            <p style="color: #666;">Simply visit your dashboard and click upgrade.</p>
+          </div>
+          <div>
+            <h4>What payment methods?</h4>
+            <p style="color: #666;">UPI, Bank Transfer, and International Cards.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <div id="footer-container"></div>
+  
+  <script>
+    // Get plan from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const plan = urlParams.get('plan');
+    if (plan) {
+      localStorage.setItem('selectedPlan', plan);
+    }
+  </script>
+</body>
+</html>
