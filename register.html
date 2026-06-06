@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - CreatorVault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <main>
+    <div class="container" style="max-width: 500px; margin: 60px auto;">
+      <div class="glass-card">
+        <h2 class="text-center">Create Account</h2>
+        <p class="text-center" style="color: #666; margin: 8px 0 24px;">Join the premium creator community</p>
+        
+        <form id="registerForm">
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Full Name</label>
+            <input type="text" id="fullName" required placeholder="Alex Johnson">
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Email Address</label>
+            <input type="email" id="email" required placeholder="hello@example.com">
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Password</label>
+            <input type="password" id="password" required placeholder="Create a strong password">
+          </div>
+          
+          <div style="margin-bottom: 24px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Confirm Password</label>
+            <input type="password" id="confirmPassword" required placeholder="Confirm your password">
+          </div>
+          
+          <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Create Account</button>
+        </form>
+        
+        <p class="text-center" style="margin-top: 24px;">
+          Already have an account? <a href="login.html" style="color: #EC4899;">Login</a>
+        </p>
+        
+        <p class="text-center" style="font-size: 12px; color: #999; margin-top: 16px;">
+          By signing up, you agree to our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>
+        </p>
+      </div>
+    </div>
+  </main>
+  
+  <div id="footer-container"></div>
+  
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (password !== confirmPassword) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showToast('Password must be at least 6 characters', 'error');
+        return;
+      }
+      
+      const { error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: fullName } }
+      });
+      
+      if (error) {
+        showToast(error.message, 'error');
+      } else {
+        showToast('Account created! Please login', 'success');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 1500);
+      }
+    });
+  </script>
+</body>
+</html>
