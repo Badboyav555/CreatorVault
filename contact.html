@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - CreatorVault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <main>
+    <div class="container" style="max-width: 700px; margin: 60px auto;">
+      <div class="glass-card">
+        <h2 class="text-center">Get in Touch</h2>
+        <p class="text-center" style="color: #666; margin: 16px 0 32px;">Have questions? We'd love to hear from you.</p>
+        
+        <form id="contactForm">
+          <div style="margin-bottom: 20px;">
+            <label>Your Name</label>
+            <input type="text" required placeholder="John Doe">
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <label>Email Address</label>
+            <input type="email" required placeholder="hello@example.com">
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <label>Subject</label>
+            <input type="text" required placeholder="How can we help?">
+          </div>
+          
+          <div style="margin-bottom: 24px;">
+            <label>Message</label>
+            <textarea rows="5" required placeholder="Tell us more..."></textarea>
+          </div>
+          
+          <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Send Message</button>
+        </form>
+        
+        <div class="flex-between" style="margin-top: 32px; justify-content: center; gap: 32px;">
+          <div class="text-center">
+            <i class="fas fa-envelope" style="font-size: 24px; color: #EC4899;"></i>
+            <p>support@creatorvault.com</p>
+          </div>
+          <div class="text-center">
+            <i class="fab fa-instagram" style="font-size: 24px; color: #EC4899;"></i>
+            <p>@creatorvault</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <div id="footer-container"></div>
+  
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      showToast('Message sent! We\'ll respond within 24 hours.', 'success');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
