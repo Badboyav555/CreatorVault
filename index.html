@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CreatorVault - Premium Creator Community. Exclusive photography, tutorials, art, and digital content.">
+  <title>CreatorVault | Premium Creator Community</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <main>
+    <div class="container">
+      <!-- Hero Section -->
+      <div class="hero">
+        <img src="https://images.unsplash.com/photo-1515378960530-7c0da6231fb1?w=1200" alt="Creator Cover" class="hero-image">
+        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Profile" class="profile-image">
+        <h1 style="margin-top: 16px;">Sophia Bennett</h1>
+        <p style="color: #666;">Visual storyteller & premium creator</p>
+        
+        <div class="flex-between" style="max-width: 400px; margin: 24px auto;">
+          <div>
+            <strong style="font-size: 24px;">245+</strong>
+            <p>Photos</p>
+          </div>
+          <div>
+            <strong style="font-size: 24px;">48</strong>
+            <p>Videos</p>
+          </div>
+          <div>
+            <strong style="font-size: 24px;">18.5k</strong>
+            <p>Subscribers</p>
+          </div>
+        </div>
+        
+        <div>
+          <a href="membership.html"><button class="btn-primary">Subscribe Now</button></a>
+          <a href="explore.html"><button class="btn-outline" style="margin-left: 12px;">Explore Content</button></a>
+        </div>
+      </div>
+      
+      <!-- Featured Content -->
+      <h2 style="margin: 48px 0 24px;">✨ Featured Content</h2>
+      <div class="grid-pinterest" id="featuredContent">
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=400" style="width: 100%; height: 220px; object-fit: cover;">
+          <div style="padding: 20px;">
+            <h3>Golden Hour Dreams</h3>
+            <p style="color: #666;">Photography</p>
+            <span class="premium-badge">Free</span>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400" style="width: 100%; height: 220px; object-fit: cover;">
+          <div style="padding: 20px;">
+            <h3>Neon Tokyo Nights</h3>
+            <p style="color: #666;">Urban</p>
+            <span class="premium-badge">Premium</span>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400" style="width: 100%; height: 220px; object-fit: cover;">
+          <div style="padding: 20px;">
+            <h3>Watercolor Masterclass</h3>
+            <p style="color: #666;">Tutorial</p>
+            <span class="premium-badge">Premium</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Membership Plans Preview -->
+      <div class="glass-card" style="margin: 64px 0; text-align: center;">
+        <h2>Unlock Exclusive Content</h2>
+        <p style="margin: 16px 0;">Get access to 500+ premium photos, videos, and tutorials</p>
+        <a href="membership.html"><button class="btn-primary">View Plans →</button></a>
+      </div>
+      
+      <!-- Testimonials -->
+      <h2 style="margin: 48px 0 24px;">💬 What Creators Say</h2>
+      <div class="grid-pinterest">
+        <div class="card" style="padding: 24px;">
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <p style="margin: 16px 0;">"Best platform for creators! The community is amazing and the content is top-notch."</p>
+          <strong>- Michael Chen</strong>
+        </div>
+        <div class="card" style="padding: 24px;">
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <i class="fas fa-star" style="color: #EC4899;"></i>
+          <p style="margin: 16px 0;">"CreatorVault helped me grow my audience and monetize my art effectively."</p>
+          <strong>- Sarah Johnson</strong>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <div id="footer-container"></div>
+  
+  <script>
+    // Load dynamic content if needed
+    document.addEventListener('DOMContentLoaded', () => {
+      // Any additional page-specific JS
+    });
+  </script>
+</body>
+</html>
