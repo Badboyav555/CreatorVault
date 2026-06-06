@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - CreatorVault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <main>
+    <div class="container">
+      <h1 style="margin: 32px 0;">Admin Dashboard</h1>
+      
+      <!-- Stats Cards -->
+      <div class="grid-pinterest" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 32px;">
+        <div class="card" style="padding: 24px; text-align: center;">
+          <i class="fas fa-users" style="font-size: 32px; color: #EC4899;"></i>
+          <h3 id="totalUsers">0</h3>
+          <p>Total Users</p>
+        </div>
+        <div class="card" style="padding: 24px; text-align: center;">
+          <i class="fas fa-crown" style="font-size: 32px; color: #EC4899;"></i>
+          <h3 id="premiumUsers">0</h3>
+          <p>Premium Members</p>
+        </div>
+        <div class="card" style="padding: 24px; text-align: center;">
+          <i class="fas fa-clock" style="font-size: 32px; color: #F59E0B;"></i>
+          <h3 id="pendingPayments">0</h3>
+          <p>Pending Payments</p>
+        </div>
+        <div class="card" style="padding: 24px; text-align: center;">
+          <i class="fas fa-check-circle" style="font-size: 32px; color: #22C55E;"></i>
+          <h3 id="approvedPayments">0</h3>
+          <p>Approved</p>
+        </div>
+      </div>
+      
+      <!-- Pending Payments Section -->
+      <div class="card" style="padding: 24px; margin-bottom: 32px;">
+        <h3>Pending Payment Requests</h3>
+        <div id="pendingPaymentsList" style="margin-top: 20px;">
+          <p>Loading...</p>
+        </div>
+      </div>
+      
+      <!-- Users List -->
+      <div class="card" style="padding: 24px;">
+        <h3>All Users</h3>
+        <div id="usersList" style="margin-top: 20px; overflow-x: auto;">
+          <p>Loading...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <div id="footer-container"></div>
+  
+  <script>
+    async function loadAdminData() {
+      const user = await getCurrentUser();
+      if (!user || user.role !== 'admin') {
+        showToast('Admin access only', 'error');
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // Load users
+      const users = JSON.parse(localStorage.getItem('mock_users') || '[]');
+      document.getElementById('totalUsers').textContent = users.length;
+      document.getElementById('premiumUsers').textContent = users.filter(u => u.membership_status === 'premium').length;
+      
+      // Load payments
+      const payments = JSON.parse(localStorage.getItem('mock_payments') || '[]');
+      const pending = payments.filter(p => p.status === 'pending');
+      const approved = payments.filter(p => p.status === 'approved');
+      document.getElementById('pendingPayments').textContent = pending.length;
+      document.getElementById('approvedPayments').textContent = approved.length;
+      
+      // Render pending payments
+      const pendingList = document.getElementById('pendingPaymentsList');
+      if (pending.length === 0) {
+        pendingList.innerHTML = '<p style="color: #666; text-align: center;">No pending payments</p>';
+      } else {
+        pendingList.innerHTML = pending.map(payment => `
+          <div style="border: 1px solid #F9A8D4; border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+            <div class="flex-between">
+              <div>
+                <strong>User ID:</strong> ${payment.user_id}<br>
+                <strong>Plan:</strong> ${payment.plan}<br>
+                <strong>Transaction ID:</strong> ${payment.transaction_id}<br>
+                <strong>Submitted:</strong> ${new Date(payment.created_at).toLocaleString()}
+              </div>
+              <div>
+                <button class="btn-primary approveBtn" data-id="${payment.id}" style="margin-right: 8px;">Approve ✅</button>
+                <button class="btn-outline rejectBtn" data-id="${payment.id}">Reject ❌</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+        
+        // Add event listeners for approve/reject
+        document.querySelectorAll('.approveBtn').forEach(btn => {
+          btn.addEventListener('click', () => approvePayment(btn.dataset.id));
+        });
+        document.querySelectorAll('.rejectBtn').forEach(btn => {
+          btn.addEventListener('click', () => rejectPayment(btn.dataset.id));
+        });
+      }
+      
+      // Render users list
+      const usersList = document.getElementById('usersList');
+      usersList.innerHTML = `
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr><th style="padding: 12px; text-align: left;">Name</th><th>Email</th><th>Membership</th><th>Expiry</th></tr>
+          </thead>
+          <tbody>
+            ${users.map(user => `
+              <tr style="border-bottom: 1px solid #F9A8D4;">
+                <td style="padding: 12px;">${user.full_name || 'N/A'}</td>
+                <td style="padding: 12px;">${user.email}</td>
+                <td style="padding: 12px;">${user.membership_status || 'free'}</td>
+                <td style="padding: 12px;">${user.membership_expiry ? new Date(user.membership_expiry).toDateString() : 'Never'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+    
+    function approvePayment(paymentId) {
+      let payments = JSON.parse(localStorage.getItem('mock_payments') || '[]');
+      const payment = payments.find(p => p.id == paymentId);
+      if (payment) {
+        payment.status = 'approved';
+        
+        // Update user membership
+        let users = JSON.parse(localStorage.getItem('mock_users') || '[]');
+        const userIndex = users.findIndex(u => u.id === payment.user_id);
+        if (userIndex !== -1) {
+          users[userIndex].membership_status = payment.plan === 'basic' ? 'basic' : 'premium';
+          users[userIndex].membership_expiry = new Date(Date.now() + 30 * 86400000).toISOString();
+          localStorage.setItem('mock_users', JSON.stringify(users));
+        }
+        
+        localStorage.setItem('mock_payments', JSON.stringify(payments));
+        showToast('Payment approved! Membership activated.', 'success');
+        loadAdminData();
+      }
+    }
+    
+    function rejectPayment(paymentId) {
+      let payments = JSON.parse(localStorage.getItem('mock_payments') || '[]');
+      const payment = payments.find(p => p.id == paymentId);
+      if (payment) {
+        payment.status = 'rejected';
+        localStorage.setItem('mock_payments', JSON.stringify(payments));
+        showToast('Payment rejected', 'error');
+        loadAdminData();
+      }
+    }
+    
+    loadAdminData();
+  </script>
+</body>
+</html>
