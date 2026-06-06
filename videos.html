@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Videos - CreatorVault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <main>
+    <div class="container">
+      <h1 style="margin: 32px 0;">Video Library</h1>
+      
+      <!-- Search -->
+      <div style="margin-bottom: 32px;">
+        <input type="text" id="searchVideos" placeholder="Search videos..." style="max-width: 400px;">
+      </div>
+      
+      <!-- Video Grid -->
+      <div class="grid-pinterest" id="videoGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </main>
+  
+  <div id="footer-container"></div>
+  
+  <script>
+    let allVideos = [];
+    let isUserPremium = false;
+    
+    async function loadVideos() {
+      isUserPremium = await isPremiumMember();
+      allVideos = JSON.parse(localStorage.getItem('mock_videos') || '[]');
+      renderVideos(allVideos);
+    }
+    
+    function renderVideos(videos) {
+      const grid = document.getElementById('videoGrid');
+      grid.innerHTML = videos.map(video => `
+        <div class="card">
+          ${video.premium && !isUserPremium ? `
+            <div class="blur-premium">
+              <img src="${video.thumbnail_url}" style="width: 100%; height: 200px; object-fit: cover;" class="blur-overlay">
+              <div class="premium-lock">
+                <i class="fas fa-lock fa-2x"></i>
+                <span>Premium Video</span>
+                <a href="membership.html"><button class="btn-primary">Subscribe to Watch</button></a>
+              </div>
+            </div>
+          ` : `
+            <img src="${video.thumbnail_url}" style="width: 100%; height: 200px; object-fit: cover;">
+          `}
+          <div style="padding: 20px;">
+            <div class="flex-between">
+              <h3>${video.title}</h3>
+              <span class="premium-badge">${video.duration}</span>
+            </div>
+            <p style="color: #666; margin: 8px 0;">${video.category}</p>
+            <div class="flex-between">
+              <span><i class="far fa-eye"></i> ${video.views || 0} views</span>
+              ${video.premium ? '<span class="premium-badge">Premium</span>' : '<span class="premium-badge" style="background: #22C55E;">Free</span>'}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    document.getElementById('searchVideos').addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      const filtered = allVideos.filter(v => 
+        v.title.toLowerCase().includes(term) || 
+        v.category.toLowerCase().includes(term)
+      );
+      renderVideos(filtered);
+    });
+    
+    loadVideos();
+  </script>
+</body>
+</html>
