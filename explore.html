@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore - CreatorVault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <main>
+    <div class="container">
+      <h1 style="margin: 32px 0;">Explore All Content</h1>
+      
+      <!-- Search and Filters -->
+      <div class="flex-between" style="margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <button class="btn-outline filterBtn active" data-type="all">All</button>
+          <button class="btn-outline filterBtn" data-type="photo">Photos</button>
+          <button class="btn-outline filterBtn" data-type="video">Videos</button>
+        </div>
+        <div>
+          <select id="sortBy" class="btn-outline" style="padding: 8px 16px;">
+            <option value="latest">Latest</option>
+            <option value="popular">Most Popular</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Content Grid -->
+      <div class="grid-pinterest" id="exploreGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </main>
+  
+  <div id="footer-container"></div>
+  
+  <script>
+    let allContent = [];
+    let isUserPremium = false;
+    
+    async function loadContent() {
+      isUserPremium = await isPremiumMember();
+      const photos = JSON.parse(localStorage.getItem('mock_photos') || '[]');
+      const videos = JSON.parse(localStorage.getItem('mock_videos') || '[]');
+      allContent = [...photos.map(p => ({ ...p, contentType: 'photo' })), ...videos.map(v => ({ ...v, contentType: 'video' }))];
+      renderContent(allContent);
+    }
+    
+    function renderContent(content) {
+      const grid = document.getElementById('exploreGrid');
+      grid.innerHTML = content.map(item => `
+        <div class="card">
+          ${item.premium && !isUserPremium ? `
+            <div class="blur-premium">
+              <img src="${item.thumbnail_url}" style="width: 100%; height: 220px; object-fit: cover;" class="blur-overlay">
+              <div class="premium-lock">
+                <i class="fas fa-lock fa-2x"></i>
+                <span>Premium ${item.contentType === 'photo' ? 'Photo' : 'Video'}</span>
+                <a href="membership.html"><button class="btn-primary">Unlock Access</button></a>
+              </div>
+            </div>
+          ` : `
+            <img src="${item.thumbnail_url}" style="width: 100%; height: 220px; object-fit: cover;">
+          `}
+          <div style="padding: 20px;">
+            <div class="flex-between">
+              <h3>${item.title}</h3>
+              <i class="fas ${item.contentType === 'photo' ? 'fa-image' : 'fa-video'}" style="color: #EC4899;"></i>
+            </div>
+            <p style="color: #666; margin: 8px 0;">${item.category}</p>
+            <div class="flex-between">
+              <span><i class="far fa-eye"></i> ${item.views || 0} views</span>
+              ${item.premium ? '<span class="premium-badge">Premium</span>' : '<span class="premium-badge" style="background: #22C55E;">Free</span>'}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function filterAndSort() {
+      let filtered = [...allContent];
+      const activeType = document.querySelector('.filterBtn.active').dataset.type;
+      if (activeType !== 'all') {
+        filtered = filtered.filter(c => c.contentType === activeType);
+      }
+      
+      const sortBy = document.getElementById('sortBy').value;
+      if (sortBy === 'popular') {
+        filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
+      } else {
+        filtered.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      }
+      
+      renderContent(filtered);
+    }
+    
+    document.querySelectorAll('.filterBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filterBtn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterAndSort();
+      });
+    });
+    
+    document.getElementById('sortBy').addEventListener('change', filterAndSort);
+    
+    loadContent();
+  </script>
+</body>
+</html>
